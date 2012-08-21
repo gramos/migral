@@ -1,22 +1,10 @@
 require 'csv'
+require 'erb'
 require "import_arg_parser"
 
 def gen_migration(attributes, table_name)
-  puts <<EOS
-    Sequel.migration do
-      up do
-        create_table(:#{table_name}) do
-        primary_key :id
-EOS
-  attributes.each_with_index{|a, i| puts "        String '#{a}', :size => #{@sum_attr_size[i]}" }
-  puts <<EOS
-    end
-  end
-  down do
-    drop_table(:#{table_name})
-  end
-end
-EOS
+  @template = File.read 'lib/templates/sequel.erb'
+  puts ERB.new(@template).result(binding)
 end
 
 def parse_and_create_record(record_data, attributes, sequel_class)

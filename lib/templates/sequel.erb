@@ -1,0 +1,14 @@
+Sequel.migration do
+  up do
+    create_table(:<%= table_name %>) do
+      primary_key :id
+    <% attributes.each_with_index do |a, i| %>
+      String '<%= a %>', :size => <%= @sum_attr_size[i] %>
+    <% end %>
+    end
+  end
+
+  down do
+    drop_table(:<%= table_name %>)
+  end
+end
