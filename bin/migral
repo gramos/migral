@@ -71,7 +71,6 @@ end
 @row_count    = %x{wc -l < "#{@csv_file}"}.to_i
 @row_number   = 0
 
-
 CSV.foreach(@csv_file, {:col_sep => @separator}) do |row|
   if @first_row
     @attributes = row
