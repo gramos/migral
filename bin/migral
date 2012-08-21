@@ -1,11 +1,22 @@
+#!/usr/bin/ruby
+##########################################################################
+#  Copyright (C) 2012 Ramos, Gastón - ramos.gaston@gmail.com
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  GNU General Public License for more details.
+#
+#########################################################################
 require 'csv'
 require 'erb'
 require "import_arg_parser"
-
-def gen_migration(attributes, table_name)
-  @template = File.read 'lib/templates/sequel.erb'
-  puts ERB.new(@template).result(binding)
-end
+require "migral/migration"
 
 def parse_and_create_record(record_data, attributes, sequel_class)
   record = {}
@@ -30,22 +41,12 @@ def delete_table_data
   @sequel_class.delete
 end
 
-def sum_attr_size!(row)
-  @sum_attr_size ||= []
-
-  row.size.times do |n|
-    if @sum_attr_size[n].nil? or row[n].size > @sum_attr_size[n]
-      @sum_attr_size[n] = row[n].size
-    end
-  end
-end
-
 def process_row(row)
   if @action == "gen_migration"
-    sum_attr_size! row
+    @migration.sum_attr_size! row
 
     if @row_number +1 == @row_count
-      gen_migration @attributes, @table_name
+      puts @migration.generate @attributes, @table_name
     end
   end
 
@@ -70,6 +71,7 @@ end
 @first_row    = true
 @row_count    = %x{wc -l < "#{@csv_file}"}.to_i
 @row_number   = 0
+@migration    = Migral::Migration.new
 
 CSV.foreach(@csv_file, {:col_sep => @separator}) do |row|
   if @first_row
