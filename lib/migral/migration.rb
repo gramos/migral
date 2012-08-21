@@ -2,8 +2,12 @@ module Migral
 
   class Migration
 
-    def generate(attributes, table_name, type = 'active_record')
-      @template = File.read "lib/templates/#{type}.erb"
+    def initialize(type = 'active_record')
+      @type = type
+    end
+
+    def generate(attributes, table_name)
+      @template = File.read "lib/templates/#{@type}.erb"
       @migration = ERB.new(@template).result(binding)
     end
 

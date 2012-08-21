@@ -63,15 +63,16 @@ else
   DEBUG = false
 end
 
-@csv_file     = opt.csv_file
-@action       = opt.action
-@separator    = opt.separator || ","
-@sequel_class = Kernel.const_get opt.sequel_class if @action == "import"
-@table_name   = opt.table_name if @action == "gen_migration"
-@first_row    = true
-@row_count    = %x{wc -l < "#{@csv_file}"}.to_i
-@row_number   = 0
-@migration    = Migral::Migration.new
+@csv_file       = opt.csv_file
+@action         = opt.action
+@separator      = opt.separator || ","
+@sequel_class   = Kernel.const_get opt.sequel_class if @action == "import"
+@table_name     = opt.table_name if @action == "gen_migration"
+@first_row      = true
+@row_count      = %x{wc -l < "#{@csv_file}"}.to_i
+@row_number     = 0
+@migration_type = opt.migration_type
+@migration      = Migral::Migration.new @migration_type
 
 CSV.foreach(@csv_file, {:col_sep => @separator}) do |row|
   if @first_row

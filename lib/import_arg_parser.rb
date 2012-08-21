@@ -12,7 +12,8 @@ class ArgParser
    --------------------
 
    Example: import_csv.rb --csv_file cdr_example.csv --action gen_migration
-                          --table_name cdr_examples --separator \|
+                          --table_name cdr_examples --migration_type sequel
+                          --separator \|
 
 
    Import data:
@@ -34,6 +35,10 @@ class ArgParser
 
       opts.on("-t", "--table_name TABLE", "Table name to generate the migration") do |t|
         options.table_name = t
+      end
+
+      opts.on("-m", "--migration_type TYPE", "Migration type name to generate the migration (active_record, sequel)") do |m|
+        options.migration_type = m
       end
 
       opts.on("-c", "--sequel_class CLASS_NAME", "Sequel model class") do |c|
