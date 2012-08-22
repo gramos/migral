@@ -11,7 +11,7 @@ class ArgParser
    Generate a migration:
    --------------------
 
-   Example: import_csv.rb --csv_file cdr_example.csv --action gen_migration
+   Example: migral --csv_file cdr_example.csv --action gen_migration
                           --table_name cdr_examples --migration_type sequel
                           --separator \|
 
@@ -19,7 +19,7 @@ class ArgParser
    Import data:
    -------------
 
-   Example: import_csv.rb --csv_file cdr_example.csv --action import --sequel_class CdrExample
+   Example: migral --csv_file cdr_example.csv --action import --sequel_class CdrExample
                           --separator \|
 
    EOS

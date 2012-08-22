@@ -34,11 +34,11 @@ def parse_and_create_record(record_data, attributes, sequel_class)
 end
 
 def delete_table_data
-  puts "\n*** Im going to delete all data in #{@sequel_class}!!! ******"
+  puts "\n*** Im going to delete all data in #{@klass}!!! ******"
   puts "\nPress ctrl + c to cancel"
   sleep 5
-  puts "Deleting #{@sequel_class}..."
-  @sequel_class.delete
+  puts "Deleting #{@klass}..."
+  @klass.delete
 end
 
 def process_row(row)
@@ -51,7 +51,7 @@ def process_row(row)
   end
 
   if @action == "import"
-    parse_and_create_record row, @attributes, @sequel_class
+    parse_and_create_record row, @attributes, @klass
   end
 end
 
@@ -66,7 +66,7 @@ end
 @csv_file       = opt.csv_file
 @action         = opt.action
 @separator      = opt.separator || ","
-@sequel_class   = Kernel.const_get opt.sequel_class if @action == "import"
+@klass          = Kernel.const_get opt.sequel_class if @action == "import"
 @table_name     = opt.table_name if @action == "gen_migration"
 @first_row      = true
 @row_count      = %x{wc -l < "#{@csv_file}"}.to_i

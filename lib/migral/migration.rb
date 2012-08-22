@@ -8,13 +8,14 @@ module Migral
 
     def generate(attributes, table_name)
       @template = File.read "lib/templates/#{@type}.erb"
-      @migration = ERB.new(@template).result(binding)
+      @migration = ERB.new(@template, 0, '<>').result(binding)
     end
 
     def sum_attr_size!(row)
       @sum_attr_size ||= []
 
       row.size.times do |n|
+        next if row[n].nil?
         if @sum_attr_size[n].nil? or row[n].size > @sum_attr_size[n]
           @sum_attr_size[n] = row[n].size
         end
