@@ -1,0 +1,7 @@
+  Proc.new {
+      primary_key :id
+    <% attributes.each_with_index do |a, i| %>
+      string '<%= a %>', :size => <%= @sum_attr_size[i] %>
+    <% end %> 
+  }
+

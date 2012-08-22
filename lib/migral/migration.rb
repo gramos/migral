@@ -5,7 +5,7 @@ module Migral
 
   class Migration
 
-    def initialize(type = 'active_record', csv_file_path, table_name, separator)
+    def initialize(type, csv_file_path, table_name, separator = ",")
       @type          = type
       @table_name    = table_name
       @csv_file_path = csv_file_path
@@ -28,7 +28,8 @@ module Migral
       end
     end
 
-    def dump!
+    def dump!(db_conn_str = nil)
+      @db = db_conn_str
       @row_count  = IO.readlines(@csv_file_path).size
       @row_number = 0
 
@@ -44,7 +45,6 @@ module Migral
         @row_number += 1
       end
     end
-
 
 ##############################################################################
 #

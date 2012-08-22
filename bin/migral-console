@@ -1,0 +1,35 @@
+#!/usr/bin/ruby
+##########################################################################
+#  Copyright (C) 2012 Ramos, Gastón - ramos.gaston@gmail.com
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  GNU General Public License for more details.
+#
+#########################################################################
+require 'sequel'
+require 'migral/migration'
+
+CSV_DB          = Sequel.connect('sqlite://migral.db')
+@csv_file       = ARGV[0]
+@table          = ARGV[1].to_sym
+puts @table.inspect
+
+@migration_path = "/home/gramos/.migral/migrations/#{@csv_file}.rb"
+
+@migration = Migral::Migration.new "sequel_eval", @csv_file, @table
+
+unless CSV_DB.table_exists? @table
+  CSV_DB.create_table @table, &eval(@migration.dump!)
+end
+
+
+
+
+
