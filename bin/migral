@@ -13,79 +13,14 @@
 #  GNU General Public License for more details.
 #
 #########################################################################
-require 'csv'
-require 'erb'
-require "import_arg_parser"
+require "migral/arg_parser"
 require "migral/migration"
-
-def parse_and_create_record(record_data, attributes, sequel_class)
-  record = {}
-  attributes.each do |a|
-    index = attributes.index(a)
-    record[a] = record_data[index]
-  end
-
-  if DEBUG
-    puts c
-  else
-    print "+"
-  end
-  sequel_class.create(record)
-end
-
-def delete_table_data
-  puts "\n*** Im going to delete all data in #{@klass}!!! ******"
-  puts "\nPress ctrl + c to cancel"
-  sleep 5
-  puts "Deleting #{@klass}..."
-  @klass.delete
-end
-
-def process_row(row)
-  if @action == "gen_migration"
-    @migration.sum_attr_size! row
-
-    if @row_number +1 == @row_count
-      puts @migration.generate @attributes, @table_name
-    end
-  end
-
-  if @action == "import"
-    parse_and_create_record row, @attributes, @klass
-  end
-end
 
 opt = ArgParser.parse(ARGV)
 
-if ARGV[3] == 'debug'
-  DEBUG = true
-else
-  DEBUG = false
-end
+@migration = Migral::Migration.new opt.migration_type, opt.csv_file,
+                                        opt.table_name, opt.separator
 
-@csv_file       = opt.csv_file
-@action         = opt.action
-@separator      = opt.separator || ","
-@klass          = Kernel.const_get opt.sequel_class if @action == "import"
-@table_name     = opt.table_name if @action == "gen_migration"
-@first_row      = true
-@row_count      = %x{wc -l < "#{@csv_file}"}.to_i
-@row_number     = 0
-@migration_type = opt.migration_type
-@migration      = Migral::Migration.new @migration_type
+puts @migration.dump!
 
-CSV.foreach(@csv_file, {:col_sep => @separator}) do |row|
-  if @first_row
-    @attributes = row
-    @first_row  = false
-
-    if @action == "import"
-      delete_table_data
-      puts "\n==> Importing records data from #{@csv_file}..."
-    end
-  else
-    process_row row
-  end
-  @row_number += 1
-end
 

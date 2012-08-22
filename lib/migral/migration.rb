@@ -1,9 +1,15 @@
+require 'csv'
+require 'erb'
+
 module Migral
 
   class Migration
 
-    def initialize(type = 'active_record')
-      @type = type
+    def initialize(type = 'active_record', csv_file_path, table_name, separator)
+      @type          = type
+      @table_name    = table_name
+      @csv_file_path = csv_file_path
+      @separator     = separator || ","
     end
 
     def generate(attributes, table_name)
@@ -20,6 +26,32 @@ module Migral
           @sum_attr_size[n] = row[n].size
         end
       end
+    end
+
+    def dump!
+      @row_count  = IO.readlines(@csv_file_path).size
+      @row_number = 0
+
+      CSV.foreach(@csv_file_path, {:col_sep => @separator}) do |row|
+        if @row_number == 0
+          @attributes = row
+          @first_row  = false
+        else
+          sum_attr_size! row
+          return generate(@attributes, @table_name) if im_on_the_last_line?
+        end
+
+        @row_number += 1
+      end
+    end
+
+
+##############################################################################
+#
+    private
+
+    def im_on_the_last_line?
+      @row_number + 1 == @row_count
     end
 
   end
