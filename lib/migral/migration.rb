@@ -5,6 +5,8 @@ module Migral
 
   class Migration
 
+    attr_reader :attributes
+
     def initialize(type, csv_file_path, table_name, separator = ",")
       @type          = type
       @table_name    = table_name
@@ -12,24 +14,7 @@ module Migral
       @separator     = separator || ","
     end
 
-    def generate(attributes, table_name)
-      @template = File.read "lib/templates/#{@type}.erb"
-      @migration = ERB.new(@template, 0, '<>').result(binding)
-    end
-
-    def sum_attr_size!(row)
-      @sum_attr_size ||= []
-
-      row.size.times do |n|
-        next if row[n].nil?
-        if @sum_attr_size[n].nil? or row[n].size > @sum_attr_size[n]
-          @sum_attr_size[n] = row[n].size
-        end
-      end
-    end
-
-    def dump!(db_conn_str = nil)
-      @db = db_conn_str
+    def dump!
       @row_count  = IO.readlines(@csv_file_path).size
       @row_number = 0
 
@@ -50,8 +35,24 @@ module Migral
 #
     private
 
+    def generate(attributes, table_name)
+      @template = File.read "lib/templates/#{@type}.erb"
+      @migration = ERB.new(@template, 0, '<>').result(binding)
+    end
+
     def im_on_the_last_line?
       @row_number + 1 == @row_count
+    end
+
+    def sum_attr_size!(row)
+      @sum_attr_size ||= []
+
+      row.size.times do |n|
+        next if row[n].nil?
+        if @sum_attr_size[n].nil? or row[n].size > @sum_attr_size[n]
+          @sum_attr_size[n] = row[n].size
+        end
+      end
     end
 
   end

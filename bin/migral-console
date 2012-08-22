@@ -15,12 +15,15 @@
 #########################################################################
 require 'sequel'
 require 'migral/migration'
+require 'migral/importer'
+require 'migral/util'
+require 'irb'
+require 'migral/console-boot'
 
 CSV_DB          = Sequel.connect('sqlite://migral.db')
+
 @csv_file       = ARGV[0]
 @table          = ARGV[1].to_sym
-puts @table.inspect
-
 @migration_path = "/home/gramos/.migral/migrations/#{@csv_file}.rb"
 
 @migration = Migral::Migration.new "sequel_eval", @csv_file, @table
@@ -29,6 +32,15 @@ unless CSV_DB.table_exists? @table
   CSV_DB.create_table @table, &eval(@migration.dump!)
 end
 
+klass = Migral::Util.camelize @table
+
+eval "class #{klass} < Sequel::Model ; end"
+
+importer = Migral::Importer.new(klass, @csv_file, @separator)
+importer.import!
+
+ARGV.clear
+IRB.start
 
 
 
