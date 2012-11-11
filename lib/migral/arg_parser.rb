@@ -5,21 +5,21 @@ class ArgParser
     options = OpenStruct.new
 
    help = <<-EOS
-   This script can be used to generate a sequel migration based on csv files headers.
+   This script can be used to generate an ORM migration based on csv files headers.
    And it can be used for import data into a table.
 
    Generate a migration:
    --------------------
 
-   Example: migral --csv_file cdr_example.csv --action gen_migration
-                          --table_name cdr_examples --migration_type sequel
+   Example: migral --csv_file example.csv --action gen_migration
+                          --table_name examples --migration_type sequel
                           --separator \|
 
 
    Import data:
    -------------
 
-   Example: migral --csv_file cdr_example.csv --action import --sequel_class CdrExample
+   Example: migral --csv_file example.csv --action import --sequel_class Example
                           --separator \|
 
    EOS
@@ -61,4 +61,3 @@ class ArgParser
     options
   end
 end
-
